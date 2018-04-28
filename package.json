@@ -1,0 +1,11 @@
+{
+  "name": "privateoverflow",
+  "version": "1.0.0",
+  "description": "Private stack overflow api with easy access to answers to basic programming problems.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Maximilien Monteil",
+  "license": "MIT"
+}
