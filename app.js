@@ -1,9 +1,13 @@
+const mongoose = require('mongoose')
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
 
 // API ROUTES
 const javaRoutes = require('./api/routes/java.js')
+
+// DATABASE CONNECTION
+mongoose.connect(process.env.DBURL)
 
 // MIDDLEWARE
 app.use(morgan('dev'))
