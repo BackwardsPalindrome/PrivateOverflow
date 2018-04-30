@@ -4,7 +4,7 @@ const morgan = require('morgan')
 const app = express()
 
 // API ROUTES
-const javaRoutes = require('./api/routes/java.js')
+const indexRoutes = require('./api/routes/index.js')
 
 // DATABASE CONNECTION
 mongoose.connect(process.env.DBURL)
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 })
 
 // USE ROUTES
-app.use('/java', javaRoutes)
+app.use(indexRoutes)
 
 // ERROR HANDLING
 app.use((req, res, next) => {
