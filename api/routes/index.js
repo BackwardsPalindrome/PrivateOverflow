@@ -3,11 +3,30 @@ const router = express.Router()
 
 // REQUIRE MODELS
 const Snippet = require('../models/snippet')
+const Language = require('../models/languages')
 
 router.get('/', (req, res, next) => {
-  res.status(200).json({
-    message: 'Return list of all available languages'
-  })
+  Language.find()
+    .select('language')
+    .exec()
+    .then(languages => {
+      res.status(200).json({
+        count: languages.length,
+        request: {
+          type: 'GET',
+          description: 'Get all code snippets for a language',
+          url: 'http://localhost:8080/<language-name>'
+        },
+        languages: languages.map(lang => {
+          return { language: lang.language }
+        })
+      })
+    })
+    .catch(err => {
+      res.status(500).json({
+        error: err
+      })
+    })
 })
 
 router.get('/:lang', (req, res, next) => {
@@ -40,12 +59,12 @@ router.get('/:lang', (req, res, next) => {
 })
 
 router.post('/:lang', (req, res, next) => {
-  const title = req.body.title.split(' ').join('-')
+  const title = req.body.title.toLowerCase().split(' ').join('-')
 
-  Snippet.find({ language: req.params.lang, title: title }) // check if there's already a code snippet
+  const createSnippet = Snippet.find({ language: req.params.lang, title: title }) // check if there's already a code snippet
     .exec()
     .then(foundSnippet => {
-      if (!foundSnippet) {
+      if (foundSnippet.length === 0) {
         const snippet = new Snippet({
           title: title,
           language: req.params.lang,
@@ -63,6 +82,8 @@ router.post('/:lang', (req, res, next) => {
         })
       }
     })
+
+  createSnippet
     .then(createdSnippet => {
       res.status(201).json({
         message: 'Snippet successfully added',
@@ -77,6 +98,22 @@ router.post('/:lang', (req, res, next) => {
           }
         }
       })
+    })
+    .catch(err => {
+      res.status(500).json({
+        error: err
+      })
+    })
+
+  createSnippet
+    .then(() => {
+      return Language.find({ language: req.params.lang })
+        .exec()
+    })
+    .then(foundLanguage => {
+      if (foundLanguage.length === 0) {
+        return new Language({ language: req.params.lang }).save()
+      }
     })
     .catch(err => {
       res.status(500).json({
@@ -157,6 +194,16 @@ router.delete('/:lang/:title', (req, res, next) => {
           }
         }
       })
+    })
+    .then(() => {
+      return Snippet.find({ language: req.params.lang })
+        .exec()
+    })
+    .then(foundSnippets => {
+      if (foundSnippets.length === 0) {
+        return Language.remove({ language: req.params.lang })
+          .exec()
+      }
     })
     .catch(err => {
       res.status(500).json({
