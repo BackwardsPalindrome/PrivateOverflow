@@ -33,10 +33,10 @@ router.get('/:lang', (req, res, next) => {
   Snippet.find({ language: req.params.lang })
     .select('title tags code complexity')
     .exec()
-    .then(snippets => {
+    .then(foundSnippets => {
       res.status(200).json({
-        count: snippets.length,
-        snippets: snippets.map(snippet => {
+        count: foundSnippets.length,
+        snippets: foundSnippets.map(snippet => {
           return {
             title: snippet.title,
             tags: snippet.tags,
@@ -61,10 +61,10 @@ router.get('/:lang', (req, res, next) => {
 router.post('/:lang', (req, res, next) => {
   const title = req.body.title.toLowerCase().split(' ').join('-')
 
-  const createSnippet = Snippet.find({ language: req.params.lang, title: title }) // check if there's already a code snippet
+  const createSnippet = Snippet.findOne({ language: req.params.lang, title: title }) // check if there's already a code snippet
     .exec()
     .then(foundSnippet => {
-      if (foundSnippet.length === 0) {
+      if (!foundSnippet) {
         const snippet = new Snippet({
           title: title,
           language: req.params.lang,
@@ -107,11 +107,11 @@ router.post('/:lang', (req, res, next) => {
 
   createSnippet
     .then(() => {
-      return Language.find({ language: req.params.lang })
+      return Language.findOne({ language: req.params.lang })
         .exec()
     })
     .then(foundLanguage => {
-      if (foundLanguage.length === 0) {
+      if (!foundLanguage.length) {
         return new Language({ language: req.params.lang }).save()
       }
     })
@@ -123,7 +123,7 @@ router.post('/:lang', (req, res, next) => {
 })
 
 router.get('/:lang/:title', (req, res, next) => {
-  Snippet.find({ language: req.params.lang, title: req.params.title })
+  Snippet.findOne({ language: req.params.lang, title: req.params.title })
     .select('title code language description complexity')
     .exec()
     .then(foundSnippet => {
