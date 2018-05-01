@@ -15,7 +15,7 @@ router.get('/', (req, res, next) => {
         request: {
           type: 'GET',
           description: 'Get all code snippets for a language',
-          url: 'http://localhost:8080/<language-name>'
+          url: `${process.env.APIURL}<language-name>`
         },
         languages: languages.map(lang => {
           return { language: lang.language }
@@ -45,7 +45,7 @@ router.get('/:lang', (req, res, next) => {
             request: {
               type: 'GET',
               description: 'Get this code snippet',
-              url: `http://localhost:8080/${req.params.lang}/${snippet.title}`
+              url: `${process.env.APIURL}${req.params.lang}/${snippet.title}`
             }
           }
         })
@@ -94,7 +94,7 @@ router.post('/:lang', (req, res, next) => {
           request: {
             type: 'GET',
             description: 'View this code snippet',
-            url: `http://localhost:8080/${createdSnippet.language}/${createdSnippet.title}`
+            url: `${process.env.APIURL}${createdSnippet.language}/${createdSnippet.title}`
           }
         }
       })
@@ -137,7 +137,7 @@ router.get('/:lang/:title', (req, res, next) => {
         request: {
           type: 'GET',
           description: `Get all snippets in ${foundSnippet.language}`,
-          url: `http://localhost:8080/${foundSnippet.language}`
+          url: `${process.env.APIURL}${foundSnippet.language}`
         }
       })
     })
@@ -162,7 +162,7 @@ router.patch('/:lang/:title', (req, res, next) => {
         request: {
           type: 'GET',
           description: 'Get this code snippet',
-          url: `http://localhost:8080/${req.params.lang}/${updatedSnippet.title}`
+          url: `${process.env.APIURL}${req.params.lang}/${updatedSnippet.title}`
         }
       })
     })
@@ -182,7 +182,7 @@ router.delete('/:lang/:title', (req, res, next) => {
         request: {
           type: 'POST',
           description: 'Create a new snippet',
-          url: `http://localhost:8080/${req.params.lang}`,
+          url: `${process.env.APIURL}${req.params.lang}`,
           body: {
             title: 'String',
             tags: '[String]',
